@@ -7,12 +7,13 @@ import "../styles/style.css";
 const PostJob = () => {
   const { token } = useUser();
   const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
   const [location, setLocation] = useState("");
   const [company, setCompany] = useState("");
-  const [type, setType] = useState("Full-time"); // default
+  const [type, setType] = useState("Full-time");
   const [deadline, setDeadline] = useState("");
   const [error, setError] = useState("");
 
@@ -46,7 +47,7 @@ const PostJob = () => {
   return (
     <div className="postjob-container">
       <h2>Post a New Job</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -92,9 +93,11 @@ const PostJob = () => {
         />
         <button type="submit" className="btn">Post Job</button>
       </form>
-      <Link to="/dashboard">
-        <button className="btn" style={{ marginTop: "10px" }}>Back to Dashboard</button>
-      </Link>
+      <div style={{ textAlign: "center", marginTop: "10px" }}>
+        <Link to="/dashboard">
+          <button className="btn">Back to Dashboard</button>
+        </Link>
+      </div>
     </div>
   );
 };

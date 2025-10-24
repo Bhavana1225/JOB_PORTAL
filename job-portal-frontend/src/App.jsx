@@ -31,8 +31,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Protected route for all logged-in users */}
-          {user && <Route path="/profile" element={<Profile />} />}
+          {/* Profile route accessible to all logged-in users */}
+          <Route path="/profile" element={user ? <Profile /> : <Login />} />
 
           {/* Employer routes */}
           {user?.role === "employer" && (
@@ -50,6 +50,9 @@ function App() {
               <Route path="/applications" element={<ApplicationsDashboard />} />
             </>
           )}
+
+          {/* Fallback for unmatched routes */}
+          <Route path="*" element={<Homepage />} />
         </Routes>
       </main>
     </div>

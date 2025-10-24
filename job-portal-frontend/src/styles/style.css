@@ -59,21 +59,10 @@ h1, h2, h3 {
   background-color: #115293;
 }
 
-.btn-edit {
-  background-color: #1976d2;
-}
-
-.btn-edit:hover {
-  background-color: #115293;
-}
-
-.btn-save {
-  background-color: #43a047;
-}
-
-.btn-save:hover {
-  background-color: #388e3c;
-}
+.btn-edit { background-color: #1976d2; }
+.btn-edit:hover { background-color: #115293; }
+.btn-save { background-color: #43a047; }
+.btn-save:hover { background-color: #388e3c; }
 
 /* Inputs & Textarea */
 input[type="text"], input[type="email"], input[type="password"], input[type="date"], textarea, select {
@@ -86,10 +75,7 @@ input[type="text"], input[type="email"], input[type="password"], input[type="dat
   box-sizing: border-box;
 }
 
-textarea {
-  resize: vertical;
-  min-height: 80px;
-}
+textarea { resize: vertical; min-height: 80px; }
 
 /* Homepage & Job Cards */
 .homepage {
@@ -144,18 +130,9 @@ textarea {
   box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
 }
 
-.application-form-container .btn {
-  width: 100%;
-  margin-top: 10px;
-}
+.application-form-container .btn { width: 100%; margin-top: 10px; }
 
-/* Applications Dashboard */
-.applications-dashboard {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 0 20px;
-}
-
+/* Dashboard Tables */
 .dashboard-table {
   width: 100%;
   border-collapse: collapse;
@@ -173,60 +150,10 @@ textarea {
   color: #fff;
 }
 
-.dashboard-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
+.dashboard-table tr:nth-child(even) { background-color: #f9f9f9; }
+.dashboard-table tr:hover { background-color: #f1f1f1; }
 
-.dashboard-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.dashboard-table button {
-  margin-right: 5px;
-}
-
-/* Edit / Post Job */
-.edit-job-container, .postjob-container {
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-}
-
-.edit-job-form div, .postjob-container form div {
-  margin-bottom: 12px;
-}
-
-/* Auth Pages (Login / Register) */
-.auth-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 25px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.15);
-}
-
-.auth-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.auth-form input, .auth-form select {
-  margin-bottom: 15px;
-}
-
-.auth-footer {
-  text-align: center;
-  margin-top: 15px;
-}
-
-.error {
-  color: #e53935;
-  margin-bottom: 10px;
-}
+.dashboard-table button { margin-right: 5px; }
 
 /* Profile Page */
 .profile-container {
@@ -253,13 +180,37 @@ textarea {
   margin-bottom: 5px;
 }
 
-.profile-field p {
-  padding: 8px;
-  background-color: #f4f6f8;
-  border-radius: 6px;
+.profile-actions { text-align: center; margin-top: 20px; }
+
+/* Auth Pages */
+.auth-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 25px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.15);
 }
 
-.profile-actions {
-  text-align: center;
-  margin-top: 20px;
+.auth-container h2 { text-align: center; margin-bottom: 20px; }
+.auth-footer { text-align: center; margin-top: 15px; }
+.error { color: #e53935; margin-bottom: 10px; }
+
+/* Edit / Post Job */
+.edit-job-container, .postjob-container {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+}
+
+.edit-job-form div, .postjob-container form div { margin-bottom: 12px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-filters { flex-direction: column; }
+  .job-list { grid-template-columns: 1fr; }
+  .dashboard-table th, .dashboard-table td { font-size: 13px; }
 }

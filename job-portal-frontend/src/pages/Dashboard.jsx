@@ -1,32 +1,31 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
-import { Link } from "react-router-dom";
-import "../styles/style.css";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { user, token } = useUser();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
 
-  const fetchJobs = async () => {
-    if (!user || !token) return;
-    try {
-      const res = await axios.get("http://localhost:5000/api/jobs/employer", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setJobs(res.data || []);
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Failed to fetch jobs");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchJobs = async () => {
+      if (!user || !token) return;
+      try {
+        const res = await axios.get("http://localhost:5000/api/jobs/employer", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setJobs(res.data || []);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch jobs");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchJobs();
   }, [user, token]);
 
@@ -54,7 +53,7 @@ const Dashboard = () => {
       setJobs(jobs.map((job) => (job._id === id ? res.data : job)));
     } catch (err) {
       console.error(err);
-      alert("Failed to update job status");
+      alert("Failed to update status");
     } finally {
       setUpdatingId(null);
     }
@@ -95,16 +94,16 @@ const Dashboard = () => {
                 <td>{job.deadline ? new Date(job.deadline).toLocaleDateString() : "N/A"}</td>
                 <td>{job.filled ? "Closed" : "Open"}</td>
                 <td>
-                  <Link to={`/edit-job/${job._id}`}>
-                    <button className="btn">Edit</button>
-                  </Link>
-                  <button onClick={() => handleDelete(job._id)} className="btn">
+                  <button className="btn" onClick={() => navigate(`/edit-job/${job._id}`)}>
+                    Edit
+                  </button>
+                  <button className="btn" onClick={() => handleDelete(job._id)}>
                     Delete
                   </button>
                   <button
-                    onClick={() => handleToggleFilled(job._id)}
                     className="btn"
                     disabled={updatingId === job._id}
+                    onClick={() => handleToggleFilled(job._id)}
                   >
                     {job.filled ? "Mark Open" : "Mark Closed"}
                   </button>

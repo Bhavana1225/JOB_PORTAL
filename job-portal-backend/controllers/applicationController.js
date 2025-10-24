@@ -4,7 +4,7 @@ const Job = require("../models/jobModel");
 // Apply for a job
 const applyJob = async (req, res) => {
   try {
-    const jobId = req.params.jobId; // ✅ get from URL param
+    const jobId = req.params.jobId;
     const { name, email } = req.body;
     const userId = req.user._id;
 
@@ -29,6 +29,7 @@ const applyJob = async (req, res) => {
     await application.save();
     res.status(201).json({ message: "Application submitted successfully", application });
   } catch (error) {
+    console.error("Error in applyJob:", error);
     res.status(500).json({ message: "Failed to apply for job", error: error.message });
   }
 };

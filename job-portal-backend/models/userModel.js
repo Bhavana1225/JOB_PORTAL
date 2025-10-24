@@ -5,9 +5,14 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ["jobseeker", "employer"], default: "jobseeker" },
+    contact: { type: String, default: "" },
+    skills: { type: String, default: "" },
+    experience: { type: String, default: "" },
+    education: { type: String, default: "" },
+    role: { type: String, enum: ["jobseeker", "employer"], required: true },
   },
-  { timestamps: true } // optional: tracks createdAt and updatedAt
+  { timestamps: true }
 );
 
+// ✅ FIX – avoid overwrite error
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);

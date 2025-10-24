@@ -1,60 +1,78 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useUser } from "../context/UserContext";
+import "../styles/style.css";
 
-const ApplicationForm = ({ jobId, token }) => {
-  const [formData, setFormData] = useState({ name: "", email: "", resume: null });
-
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData(prev => ({ ...prev, [name]: files ? files[0] : value }));
-  };
+const ApplicationForm = ({ jobId }) => {
+  const { user, token } = useUser();
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [resume, setResume] = useState(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!name || !email || !resume) {
+      setError("All fields including resume are required");
+      return;
+    }
 
     try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("email", formData.email);
-      data.append("resume", formData.resume);
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("resume", resume);
 
-      await axios.post(`http://localhost:5000/api/applications/${jobId}/apply`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
+      await axios.post(
+        `http://localhost:5000/api/applications/${jobId}/apply`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      alert("Application submitted successfully");
-      setFormData({ name: "", email: "", resume: null });
-    } catch (error) {
-      console.error("Error submitting application:", error);
-      alert(error.response?.data?.message || "Failed to submit application");
+      setSuccess("Application submitted successfully");
+      setError("");
+    } catch (err) {
+      console.error("Error submitting application:", err);
+      setError(err.response?.data?.message || "Failed to submit application");
+      setSuccess("");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: "400px", margin: "20px auto" }}>
-      <div style={{ marginBottom: "10px" }}>
-        <label>Name</label>
-        <input type="text" name="name" value={formData.name} onChange={handleChange} required style={{ width: "100%", padding: "8px", marginTop: "5px" }} />
-      </div>
-
-      <div style={{ marginBottom: "10px" }}>
-        <label>Email</label>
-        <input type="email" name="email" value={formData.email} onChange={handleChange} required style={{ width: "100%", padding: "8px", marginTop: "5px" }} />
-      </div>
-
-      <div style={{ marginBottom: "10px" }}>
-        <label>Resume</label>
-        <input type="file" name="resume" accept=".pdf,.doc,.docx" onChange={handleChange} required style={{ width: "100%", padding: "8px", marginTop: "5px" }} />
-      </div>
-
-      <button type="submit" style={{ backgroundColor: "#007bff", color: "#fff", padding: "10px 15px", border: "none", cursor: "pointer", width: "100%" }}>
-        Apply
-      </button>
-    </form>
+    <div className="application-form-container">
+      <h3>Apply for this Job</h3>
+      {error && <p className="error">{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Your Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Your Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="file"
+          accept=".pdf,.doc,.docx"
+          onChange={(e) => setResume(e.target.files[0])}
+          required
+        />
+        <button type="submit" className="btn">Submit Application</button>
+      </form>
+    </div>
   );
 };
 

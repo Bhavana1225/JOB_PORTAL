@@ -1,13 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const { applyJob, getUserApplications, updateApplication, deleteApplication } = require("../controllers/applicationController");
+const {
+  applyJob,
+  getUserApplications,
+  updateApplication,
+  deleteApplication,
+} = require("../controllers/applicationController");
 const { protect } = require("../middleware/authmiddleware");
 
 // Multer config for resume upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
+  filename: (req, file, cb) => {
+    // sanitize filename to remove special characters
+    const safeName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, "_");
+    cb(null, Date.now() + "-" + safeName);
+  },
 });
 const upload = multer({ storage });
 

@@ -1,84 +1,121 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../context/UserContext";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import "../styles/style.css";
 
 const EditJob = () => {
-  const { id } = useParams();
+  const { token } = useUser();
   const navigate = useNavigate();
-  const [jobData, setJobData] = useState({
-    title: "",
-    description: "",
-    requirements: "",
-    location: "",
-    deadline: "",
-    type: "Full-time", // default
-  });
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams(); // ✅ Fixed param name
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [requirements, setRequirements] = useState("");
+  const [location, setLocation] = useState("");
+  const [company, setCompany] = useState("");
+  const [type, setType] = useState("Full-time");
+  const [deadline, setDeadline] = useState("");
   const [error, setError] = useState("");
 
-  const fetchJob = async () => {
-    try {
-      const res = await axios.get(`http://localhost:5000/api/jobs/${id}`);
-      setJobData({
-        title: res.data.title || "",
-        description: res.data.description || "",
-        requirements: Array.isArray(res.data.requirements) ? res.data.requirements.join(", ") : res.data.requirements || "",
-        location: res.data.location || "",
-        deadline: res.data.deadline ? res.data.deadline.split("T")[0] : "",
-        type: res.data.type || "Full-time",
-      });
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load job details.");
-    } finally { setLoading(false); }
-  };
-
-  useEffect(() => { fetchJob(); }, [id]);
-
-  const handleChange = (e) => { setJobData({ ...jobData, [e.target.name]: e.target.value }); };
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/jobs/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const job = res.data;
+        setTitle(job.title || "");
+        setDescription(job.description || "");
+        setRequirements((job.requirements || []).join(", "));
+        setLocation(job.location || "");
+        setCompany(job.company || "");
+        setType(job.type || "Full-time");
+        setDeadline(job.deadline ? new Date(job.deadline).toISOString().split("T")[0] : "");
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load job details");
+      }
+    };
+    if (id) fetchJob();
+  }, [id, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!title || !description) {
+      setError("Title and description are required");
+      return;
+    }
     try {
-      const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/jobs/${id}`,
+        `http://localhost:5000/api/jobs/${id}`, // ✅ Correct URL
         {
-          ...jobData,
-          requirements: jobData.requirements.split(",").map(r => r.trim()).filter(Boolean)
+          title,
+          description,
+          requirements: requirements.split(",").map((r) => r.trim()),
+          location,
+          company,
+          type,
+          deadline,
         },
-        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      setError("Failed to update job.");
+      setError("Failed to update job");
     }
   };
-
-  if (loading) return <p>Loading job details...</p>;
 
   return (
     <div className="edit-job-container">
       <h2>Edit Job</h2>
       {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit} className="edit-job-form">
-        <div><label>Job Title:</label><input type="text" name="title" value={jobData.title} onChange={handleChange} required /></div>
-        <div><label>Description:</label><textarea name="description" value={jobData.description} onChange={handleChange} required></textarea></div>
-        <div><label>Requirements (comma separated):</label><textarea name="requirements" value={jobData.requirements} onChange={handleChange} required></textarea></div>
-        <div><label>Location:</label><input type="text" name="location" value={jobData.location} onChange={handleChange} required /></div>
-        <div><label>Job Type:</label>
-          <select name="type" value={jobData.type} onChange={handleChange}>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <input type="text" placeholder="Job Title" value={title}
+            onChange={(e) => setTitle(e.target.value)} required />
+        </div>
+        <div>
+          <textarea placeholder="Job Description" value={description}
+            onChange={(e) => setDescription(e.target.value)} required />
+        </div>
+        <div>
+          <input type="text" placeholder="Requirements (comma separated)"
+            value={requirements} onChange={(e) => setRequirements(e.target.value)} />
+        </div>
+        <div>
+          <input type="text" placeholder="Location"
+            value={location} onChange={(e) => setLocation(e.target.value)} />
+        </div>
+        <div>
+          <input type="text" placeholder="Company"
+            value={company} onChange={(e) => setCompany(e.target.value)} />
+        </div>
+        <div>
+          <select value={type} onChange={(e) => setType(e.target.value)}>
             <option value="Full-time">Full-time</option>
             <option value="Part-time">Part-time</option>
             <option value="Internship">Internship</option>
             <option value="Contract">Contract</option>
           </select>
         </div>
-        <div><label>Application Deadline:</label><input type="date" name="deadline" value={jobData.deadline} onChange={handleChange} required /></div>
-        <button type="submit" className="btn">Update Job</button>
+        <div>
+          <input type="date" value={deadline}
+            onChange={(e) => setDeadline(e.target.value)} />
+        </div>
+        <div>
+          <button type="submit" className="btn btn-save">
+            Save Changes
+          </button>
+        </div>
       </form>
+
+      <div style={{ marginTop: "10px", textAlign: "center" }}>
+        <Link to="/dashboard">
+          <button className="btn btn-edit">Back to Dashboard</button>
+        </Link>
+      </div>
     </div>
   );
 };
